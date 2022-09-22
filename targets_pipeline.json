@@ -1,0 +1,16 @@
+{
+    "pipeline": {
+        "name": "targets_pipeline"
+    },
+    "description": "A pipeline that transforms CDP target data to fit desired schema",
+    "transform": {
+        "cmd": [ "R", "-e", "source('/targets/targetscript.R')", "q()" ],
+        "image": "dowden19/pachytests:pachy_docker"
+    },
+    "input": {
+        "pfs": {
+        "repo": "targets",
+        "glob": "/*"
+        }
+    }
+}
