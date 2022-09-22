@@ -1,0 +1,25 @@
+How-To Pachyderm
+
+Setting Up Kubernetes
+
+If setting up for the first time, follow the instructions on Pachyderm’s Getting Started guide. It includes some additional installation steps. If you have an existing pachyderm pipeline set up, go to Docker and select Reset Kubernetes Cluster.
+
+Run “helm install --wait --timeout 10m pachd pach/pachyderm --set deployTarget=LOCAL” to install pachyderm on the new Kubernetes cluster 
+
+Then run the following commands to connect to the cluster. 
+	pachctl config import-kube local --overwrite
+	pachctl config set active-context local
+	pachctl port-forward 
+
+
+Setting up Pipeline
+
+Note: for many of these commands you will need to edit to set the correct file path for your local machine
+
+Run “pachctl create repo targets” to create a repository and then “pachctl put file targets@master:target_raw.csv -f ~/Desktop/targets_pachyderm/target_raw.csv” to add the raw csv file to the repo. 
+
+To build the pipeline we need to use an existing Docker image. In order to do this, we can create a docker file, build the image, and push it to docker hub so that we can reference it. The Dockerfile is provided in the targets_pachyderm folder.
+
+First you must create an account on the Docker hub website and then log-in through your terminal using “docker login”. Then you can cd into the repository and build your image using “docker build -t targets_pachyderm .” Then rename the image using “docker tag targets_pachyderm dowden19/targets_pachyderm:targets_pachyderm” and push it to the hub using “docker push dowden19/targets_pachyderm:targets_pachyderm”
+
+Now that the image exists in docker hub, we can reference it in our pipeline file (targets_pipeline.json). Run the command “pachctl create pipeline -f targets_pachyderm/targets_pipeline.json.” This will automatically create and run the pipeline, which can be viewed in more detail by going to localhost:4000 in your browser. 
